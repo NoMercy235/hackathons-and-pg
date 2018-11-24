@@ -1,98 +1,102 @@
 import { Helper, magic } from './helper';
 
-export function createParaphraser (coords) {
-  function createHeader () {
+function createHeader (options) {
+  const span = document.createElement('span');
+  span.style.flex = '1';
+  span.innerText = 'It looks like this is hate speech.';
+
+  const closeBtn = document.querySelector('div[aria-label="Dismiss"]').cloneNode(true);
+  closeBtn.style.display = 'flex';
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.addEventListener('click', options.onClose);
+
+  const header = document.createElement('div');
+  const headerStyles = {
+    background: '#f5f6f7',
+    padding: '10px',
+    display: 'flex',
+    'align-items': 'center',
+    'font-size': '1.5em',
+    'border-bottom': '1px solid black',
+  };
+  Helper.applyStyleOnNode(header, headerStyles);
+
+  header.appendChild(span);
+  header.appendChild(closeBtn);
+
+  return header;
+}
+
+function createBody (options) {
+
+  function createParagraph () {
     const span = document.createElement('span');
-    span.innerText = 'It looks like this is hate speech.';
-
-    const closeBtn = document.querySelector('div[aria-label="Dismiss"]').cloneNode(true);
-    closeBtn.style.display = 'flex';
-
-    const header = document.createElement('div');
-    const headerStyles = {
-      background: '#f5f6f7',
-      padding: '10px',
-      display: 'flex',
-      'align-items': 'center',
-      'font-size': '1.5em',
-      'border-bottom': '1px solid black',
-    };
-    // header.innerText = 'It looks like this is hate speech.';
-    Helper.applyStyleOnNode(header, headerStyles);
-
-    header.appendChild(span);
-    header.appendChild(closeBtn);
-
-    return header;
+    span.innerText = 'You may end up being banned form the site. How about changing the text to one of the following:';
+    return span;
   }
 
-  function createBody () {
+  const body = document.createElement('div');
+  const bodyStyles = {
+    background: 'white',
+    padding: '10px',
+  };
 
-    function createParagraph () {
-      const span = document.createElement('span');
-      span.innerText = 'You may end up being banned form the site. How about changing the text to one of the following:';
-      return span;
-    }
+  Helper.applyStyleOnNode(body, bodyStyles);
+  body.appendChild(createParagraph());
+  return body;
+}
 
-    const body = document.createElement('div');
-    const bodyStyles = {
-      background: 'white',
-      padding: '10px',
-    };
+function createMainContainer (options) {
+  const container = document.createElement("div");
+  const styles = {
+    background: 'white',
+    overflow: 'hidden',
+    border: '1px solid black',
+    'border-radius': '3%',
+    'font-size': '1em',
+  };
 
-    Helper.applyStyleOnNode(body, bodyStyles);
-    body.appendChild(createParagraph());
-    return body;
-  }
+  Helper.applyStyleOnNode(container, styles);
+  container.appendChild(createHeader(options));
+  container.appendChild(createBody(options));
 
-  function createMainContainer () {
-    const container = document.createElement("div");
-    const styles = {
-      background: 'white',
-      overflow: 'hidden',
-      border: '1px solid black',
-      'border-radius': '3%',
-      'font-size': '1em',
-    };
+  return container;
+}
 
-    Helper.applyStyleOnNode(container, styles);
-    container.appendChild(createHeader());
-    container.appendChild(createBody());
+function createPointer (options) {
+  const pointer = document.createElement("div");
+  const styles = {
+    width: 0,
+    height: 0,
+    'align-self': 'center',
+    'border-left': '10px solid transparent',
+    'border-right': '10px solid transparent',
+    'border-bottom': '10px solid black',
+    'border-top': 0,
+  };
 
-    return container;
-  }
+  Helper.applyStyleOnNode(pointer, styles);
 
-  function createPointer () {
-    const pointer = document.createElement("div");
-    const styles = {
-      width: 0,
-      height: 0,
-      'align-self': 'center',
-      'border-left': '10px solid transparent',
-      'border-right': '10px solid transparent',
-      'border-bottom': '10px solid black',
-      'border-top': 0,
-    };
+  return pointer;
+}
 
-    Helper.applyStyleOnNode(pointer, styles);
-
-    return pointer;
-  }
-
+export function createParaphraser (options) {
   const node = document.createElement("div");
   const styles = {
     width: `${magic.CONTAINER_WIDTH}px`,
     position: 'absolute',
-    left: coords.x + 'px',
-    top: coords.y + 'px',
+    left: options.coords.x + 'px',
+    top: options.coords.y + 'px',
     display: 'flex',
     'flex-direction': 'column',
     'z-index': 10000
   };
 
+  node.setAttribute('id', options.id);
+  node.addEventListener('click', ev => ev.stopPropagation());
   Helper.applyStyleOnNode(node, styles);
-  node.appendChild(createPointer());
-  node.appendChild(createMainContainer());
+  node.appendChild(createPointer(options));
+  node.appendChild(createMainContainer(options));
 
   return node;
 

@@ -21,21 +21,40 @@ class Paraphraser {
     }
   }
 
+  _onClose (ev) {
+    const body = document.getElementsByTagName('body')[0];
+    this.isOpen = false;
+    const node = document.getElementById('noho-paraphraser');
+    node && body.removeChild(node);
+  }
+
   _insertTextReplaceOptions (coords = { x: 0, y: 0 }) {
     if (this.isOpen) return;
-    const paraphraser = createParaphraser(coords);
-    document.getElementsByTagName('body')[0].appendChild(paraphraser);
+    const body = document.getElementsByTagName('body')[0];
+
+    const options = {
+      id: 'noho-paraphraser',
+      coords,
+      onClose: this._onClose.bind(this)
+    };
+
+    const paraphraser = createParaphraser(options);
+    body.appendChild(paraphraser);
     paraphraser.scrollIntoView({ behavior: 'smooth' });
     this.isOpen = true;
   }
 
   _applyAreaListener () {
-    console.log('Applied area event');
-    const l = document.addEventListener('keydown', ev => {
+    let l;
+    l = document.addEventListener('click', this._onClose.bind(this));
+    this.listeners.push({ type: 'keydown', listener: l });
+
+    l = document.addEventListener('keydown', ev => {
       const keyName = ev.key;
       console.log('keydown event key: ' + keyName);
     });
     this.listeners.push({ type: 'keydown', listener: l });
+    console.log('Applied area event');
   }
 
   _applyPostBtnListener () {
