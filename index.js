@@ -45,7 +45,7 @@ class Paraphraser {
   }
 
   _onContinue () {
-    finalText = this.targetArea.innerHTML;
+    finalText = this.targetArea.innerText;
     this.postBtn.click();
     this.remove();
   }
