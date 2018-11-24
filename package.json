@@ -4,6 +4,8 @@
   "description": "Project for the 2NHacks event.",
   "main": "index.js",
   "scripts": {
+    "dev": "webpack index.js --watch --mode development",
+    "build": "webpack index.js --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
