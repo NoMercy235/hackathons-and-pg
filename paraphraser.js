@@ -3,7 +3,7 @@ import { Helper, magic } from './helper';
 function createHeader (options) {
   const span = document.createElement('span');
   span.style.flex = '1';
-  span.innerText = 'It looks like this is hate speech.';
+  span.innerText = 'It looks like this is offensive language.';
 
   const closeBtn = document.querySelector('div[aria-label="Dismiss"]').cloneNode(true);
   closeBtn.style.display = 'flex';
