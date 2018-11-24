@@ -35,14 +35,31 @@ function createBody (options) {
     return span;
   }
 
+  function createHr () {
+    return document.createElement('hr');
+  }
+
+  function createOptions () {
+    const options = document.createElement('div');
+    const optionsStyles = {
+    };
+
+    Helper.applyStyleOnNode(options, optionsStyles);
+    options.setAttribute('class', 'noho-options');
+    return options;
+  }
+
   const body = document.createElement('div');
   const bodyStyles = {
     background: 'white',
     padding: '10px',
+    'font-size': '1.1em',
   };
 
   Helper.applyStyleOnNode(body, bodyStyles);
   body.appendChild(createParagraph());
+  body.appendChild(createHr());
+  body.appendChild(createOptions());
   return body;
 }
 
@@ -100,4 +117,20 @@ export function createParaphraser (options) {
 
   return node;
 
+}
+
+export function createOption (text, onSelect) {
+  const option = document.createElement('div');
+  const styles = {
+    padding: '2px',
+    'border-radius': '2%',
+    'font-weight': 'bold',
+  };
+
+  Helper.applyStyleOnNode(option, styles);
+
+  option.innerText = '> ' + text;
+  option.addEventListener('click', onSelect.bind(null, text));
+
+  return option;
 }

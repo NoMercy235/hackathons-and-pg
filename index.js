@@ -1,5 +1,7 @@
-import { createParaphraser } from './paraphraser';
+import { createOption, createParaphraser } from './paraphraser';
 import { magic } from './helper';
+import { getReplaceText } from './service';
+import { applyGlobalCSS, removeGlobalCSS } from './global-style';
 
 class Paraphraser {
   constructor (options) {
@@ -28,7 +30,7 @@ class Paraphraser {
     node && body.removeChild(node);
   }
 
-  _insertTextReplaceOptions (coords = { x: 0, y: 0 }) {
+  _insertTextReplaceOptionsContainer (coords = { x: 0, y: 0 }) {
     if (this.isOpen) return;
     const body = document.getElementsByTagName('body')[0];
 
@@ -42,6 +44,20 @@ class Paraphraser {
     body.appendChild(paraphraser);
     paraphraser.scrollIntoView({ behavior: 'smooth' });
     this.isOpen = true;
+  }
+
+  _insetTextOptions (options) {
+    if (!this.isOpen) return;
+
+    const container = document.querySelector('#noho-paraphraser .noho-options');
+
+    options.forEach(option => {
+      const optionNode = createOption(option, selection => {
+        console.log('selected: ', selection);
+        document.querySelector('[data-editor]').innerHTML = selection;
+      });
+      container.appendChild(optionNode);
+    })
   }
 
   _applyAreaListener () {
@@ -59,27 +75,31 @@ class Paraphraser {
 
   _applyPostBtnListener () {
     console.log('Applied post btn event');
-    const l = this.postBtn.addEventListener('click', ev => {
+    const l = this.postBtn.addEventListener('click', async ev => {
       ev.stopPropagation();
 
       const popupLoc = { x: +ev.pageX - (magic.CONTAINER_WIDTH / 2), y: +ev.pageY + magic.TOP_OFFSET };
       console.log(`Tried to post. CLicked on coords (${popupLoc.x}, ${popupLoc.y})`);
-      this._insertTextReplaceOptions(popupLoc);
+      this._insertTextReplaceOptionsContainer(popupLoc);
+      const result = await getReplaceText(document.querySelector(this.options.textSelector).innerHTML);
+      this._insetTextOptions(result);
     });
     this.listeners.push({ type: 'keydown', listener: l });
   }
 
   apply () {
     console.group('Applying paraphraser');
+    applyGlobalCSS();
     this._applyAreaListener();
     this._applyPostBtnListener();
-    console.groupEnd()
+    console.groupEnd();
   }
 
   reset () {
     this.listeners.forEach(l => {
       document.removeEventListener(l.type, l.listener);
     });
+    removeGlobalCSS();
   }
 }
 
