@@ -43,6 +43,8 @@ class Paraphraser {
     this.isOpen = false;
     const node = document.getElementById('noho-paraphraser');
     node && body.removeChild(node);
+
+    this.targetArea.scrollIntoView({ behavior: 'smooth' });
   }
 
   _onContinue () {
@@ -77,6 +79,7 @@ class Paraphraser {
       const optionNode = createOption(option, selection => {
         this._onClose();
         this._removeHighlightOffensiveArea();
+        this.targetArea.scrollIntoView({ behavior: 'smooth' });
         this.targetArea.innerHTML = selection;
       });
       container.appendChild(optionNode);
