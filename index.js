@@ -38,6 +38,7 @@ class Paraphraser {
   }
 
   _onClose (ev) {
+    this._removeHighlightOffensiveArea();
     const body = document.getElementsByTagName('body')[0];
     this.isOpen = false;
     const node = document.getElementById('noho-paraphraser');
@@ -47,6 +48,7 @@ class Paraphraser {
   _onContinue () {
     finalText = this.targetArea.innerText;
     this.postBtn.click();
+    this._onClose();
     this.remove();
   }
 
@@ -82,8 +84,6 @@ class Paraphraser {
 
     const okWithIt = createOption('I don\'t care. Let me post.', () => {
       this.userAgreed = true;
-      this._onClose();
-      this._removeHighlightOffensiveArea();
       this._onContinue();
     });
 
@@ -103,10 +103,6 @@ class Paraphraser {
     l = document.addEventListener('click', this._onClose.bind(this));
     this.listeners.push({ type: 'keydown', listener: l });
 
-    // l = document.addEventListener('keydown', ev => {
-    //   const keyName = ev.key;
-    //   console.log('keydown event key: ' + keyName);
-    // });
     this.listeners.push({ type: 'keydown', listener: l });
     console.log('Applied area event');
   }
@@ -152,13 +148,14 @@ class Paraphraser {
   }
 
   remove () {
-    console.log('Removing');
+    console.group('Removing paraphraser');
     this.isApplied = false;
     this.listeners.forEach(l => {
       document.removeEventListener(l.type, l.listener);
     });
     removeGlobalCSS();
     this._init();
+    console.groupEnd();
   }
 }
 
@@ -168,7 +165,7 @@ const checkExist = setInterval(() => {
   if (para.isApplied) {
     // Hack to check if the found button is actually the real one.
     const postBtn = document.querySelector(para.options.postBtnSelector);
-    if (postBtn !== para.postBtn) { para.remove() }
+    if (postBtn !== para.postBtn) { para.remove(); }
     return;
   }
 
