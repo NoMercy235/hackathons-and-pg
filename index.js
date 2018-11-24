@@ -80,7 +80,12 @@ class Paraphraser {
         this._onClose();
         this._removeHighlightOffensiveArea();
         this.targetArea.scrollIntoView({ behavior: 'smooth' });
-        this.targetArea.innerHTML = selection;
+
+        // Ultra mega hack to remake the broken link between React and the DOM.
+        this._auxTargetArea = this.targetArea.cloneNode(true);
+        this._auxTargetArea.innerText = selection;
+        this.targetArea.replaceWith(this._auxTargetArea);
+        this.targetArea = this._auxTargetArea;
       });
       container.appendChild(optionNode);
     });
@@ -106,6 +111,10 @@ class Paraphraser {
     l = document.addEventListener('click', this._onClose.bind(this));
     this.listeners.push({ type: 'keydown', listener: l });
 
+    l = this.targetArea.addEventListener('keydown', ev => {
+      const keyName = ev.key;
+      console.log('keydown event key: ' + keyName);
+    });
     this.listeners.push({ type: 'keydown', listener: l });
     console.log('Applied area event');
   }
@@ -117,7 +126,7 @@ class Paraphraser {
 
       ev.stopPropagation();
 
-      const result = await getReplaceText(document.querySelector(this.options.textSelector).innerHTML);
+      const result = await getReplaceText(document.querySelector(this.options.textSelector).innerText);
       if (!result.length) {
         this._onContinue();
         return;
