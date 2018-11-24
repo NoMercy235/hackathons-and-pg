@@ -3,6 +3,20 @@ import { magic } from './helper';
 import { getReplaceText } from './service';
 import { applyGlobalCSS, removeGlobalCSS } from './global-style';
 
+let finalText;
+
+(function(send) {
+  const token = '%22text%22%3A';
+  XMLHttpRequest.prototype.send = function(data) {
+    if (data && data.contains(token)) {
+      console.log(data);
+      data = data.replace(/%22text%22%3A%22([a-zA-Z0-9]+)%22/, `%22text%22%3A%22${finalText}%22`);
+    }
+    send.call(this, data);
+  };
+
+})(XMLHttpRequest.prototype.send);
+
 class Paraphraser {
   constructor (options) {
     this._init(options);
@@ -18,7 +32,7 @@ class Paraphraser {
 
   _getDefaultParams () {
     return {
-      textSelector: '[data-editor]',
+      textSelector: '[data-testid="status-attachment-mentions-input"]',
       postBtnSelector: 'button[data-testid="react-composer-post-button"]',
     }
   }
@@ -31,6 +45,7 @@ class Paraphraser {
   }
 
   _onContinue () {
+    finalText = this.targetArea.innerHTML;
     this.postBtn.click();
     this.remove();
   }
@@ -59,14 +74,13 @@ class Paraphraser {
     options.forEach(option => {
       const optionNode = createOption(option, selection => {
         this._onClose();
-        this._onClose();
         this._removeHighlightOffensiveArea();
         this.targetArea.innerHTML = selection;
       });
       container.appendChild(optionNode);
     });
 
-    const okWithIt = createOption('I don\t care. Let me post.', () => {
+    const okWithIt = createOption('I don\'t care. Let me post.', () => {
       this.userAgreed = true;
       this._onClose();
       this._removeHighlightOffensiveArea();
@@ -125,6 +139,7 @@ class Paraphraser {
     this.isApplied = true;
 
     this.targetArea = document.querySelector(this.options.textSelector);
+    this.targetArea.setAttribute('tab-index', '0');
     console.log('Caught text element:', this.targetArea);
 
     this.postBtn = document.querySelector(this.options.postBtnSelector);
