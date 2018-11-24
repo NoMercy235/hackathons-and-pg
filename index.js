@@ -8,6 +8,7 @@ class Paraphraser {
     this.options = options || this._getDefaultParams();
     this.listeners = [];
     this.isOpen = false;
+    this.userAgreed = false;
 
     this.targetArea = document.querySelector(this.options.textSelector);
     console.log('Caught text element:', this.targetArea);
@@ -57,7 +58,15 @@ class Paraphraser {
         document.querySelector('[data-editor]').innerHTML = selection;
       });
       container.appendChild(optionNode);
-    })
+    });
+
+    const okWithIt = createOption('I don\t care. Let me post.', () => {
+      this.userAgreed = true;
+      this._onClose();
+      document.querySelector(this.options.postBtnSelector).click();
+    });
+
+    container.appendChild(okWithIt);
   }
 
   _applyAreaListener () {
@@ -76,6 +85,7 @@ class Paraphraser {
   _applyPostBtnListener () {
     console.log('Applied post btn event');
     const l = this.postBtn.addEventListener('click', async ev => {
+      if (this.userAgreed) return;
       ev.stopPropagation();
 
       const popupLoc = { x: +ev.pageX - (magic.CONTAINER_WIDTH / 2), y: +ev.pageY + magic.TOP_OFFSET };
