@@ -1,7 +1,7 @@
-/.idea/
-/node_modules/
-/dist/
-/server/server.cert/
-/server/server.key/
+.idea/
+node_modules/
+dist/
+server/server.cert/
+server/server.key/
 
-/ignoreme/
+.ignoreme
