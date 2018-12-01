@@ -1,0 +1,7 @@
+node_modules
+.idea
+.git
+.gitignore
+docker-compose.yml
+database
+data

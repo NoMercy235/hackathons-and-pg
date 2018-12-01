@@ -1,0 +1,12 @@
+.HomeContainer {
+  display: flex;
+  flex-wrap: wrap;
+
+  .ex-event {
+    margin: 10px;
+    display: inline-flex;
+    flex-direction: column;
+
+    width: 30vw;
+  }
+}

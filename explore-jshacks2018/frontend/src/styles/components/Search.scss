@@ -1,0 +1,29 @@
+.ex-search-container {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+
+  div[class*='MuiCardContent'] {
+    display: flex;
+
+    div[class*='MuiFormControl'] {
+      flex: 1;
+    }
+
+    div[class*='MuiFormControl']:not(:last-of-type) {
+      padding-right: 10px;
+    }
+
+    .ex-search-icon {
+      align-self: center;
+    }
+
+    .ex-search-icon:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+div[class*='MuiPaper'].ex-search  {
+  width: 50vw;
+}
